@@ -1,0 +1,93 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace FolderRemove
+{
+    public partial class Form1 : Form
+    {
+        private Button cleanButton;
+        private string rootPath = @"C:\Users\hopef\Desktop\削除用フォルダ";
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // objフォルダ削除
+                DeleteFolders(rootPath, "obj");
+
+                // Debugフォルダ削除
+                DeleteFolders(rootPath, "Debug");
+
+                // Releaseフォルダのexe以外を削除
+                CleanReleaseFolder(rootPath);
+
+                MessageBox.Show("クリーンアップ完了", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"エラー: {ex.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void DeleteFolders(string root, string folderName)
+        {
+            var directories = Directory.GetDirectories(root, folderName, SearchOption.AllDirectories);
+            foreach (var dir in directories)
+            {
+                try
+                {
+                    Directory.Delete(dir, true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"削除失敗: {dir} - {ex.Message}");
+                }
+            }
+        }
+
+        private void CleanReleaseFolder(string root)
+        {
+            var releaseDirs = Directory.GetDirectories(root, "Release", SearchOption.AllDirectories);
+            foreach (var dir in releaseDirs)
+            {
+                foreach (var file in Directory.GetFiles(dir))
+                {
+                    if (Path.GetExtension(file) != ".exe")
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"削除失敗: {file} - {ex.Message}");
+                        }
+                    }
+                }
+
+                foreach (var subDir in Directory.GetDirectories(dir))
+                {
+                    try
+                    {
+                        Directory.Delete(subDir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"削除失敗: {subDir} - {ex.Message}");
+                    }
+                }
+            }
+        }
+    }
+}
