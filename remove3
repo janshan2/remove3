@@ -14,7 +14,7 @@ namespace FolderRemove
     public partial class Form1 : Form
     {
         private Button cleanButton;
-        private string rootPath = @"C:\Users\hopef\Desktop\削除用フォルダ";
+        private string rootPath = @"削除したいフォルダパス";
         public Form1()
         {
             InitializeComponent();
